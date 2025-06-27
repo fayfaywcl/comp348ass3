@@ -69,7 +69,7 @@
 (defn get-temperatures
   "Pure function: Extracts temperatures from reports."
   [reports]
-  (map :temperature reports))
+  (vec (map :temperature reports)))
 
 (defn find-extreme-reports
   "Pure function: Finds hottest and coldest reports."
@@ -178,14 +178,14 @@
   (println "Invalid input. Please enter a valid integer."))
 
 (defn prompt-for-integer
-  "Prompt for an integer, re-prompting if the input is invalid."
+  "Prompt for an integer, re-prompting if the input is invalid.(For Type Error)"
   [prompt]
   (let [input (get-user-input prompt)]
     (if (valid-integer? input)
       (Integer/parseInt input)  ; Return parsed integer if valid
       (do
-        (display-error-message)  ; Call the side-effect function
-        (prompt-for-integer prompt)))))  ; Recursive call if invalid input
+        (display-error-message)
+        (recur prompt)))))  ; Recursive call with the prompt to re-prompt
 
 (defn display-table-header
   "I/O function: Displays table header."
@@ -294,13 +294,6 @@
   "Write your code. Saving is optional"
   [reports])
 
-;; (defn save-reports
-;;   "Write reports to a file."
-;;   [reports]
-;;   (with-open [writer (clojure.java.io/writer "weather_data.txt")]
-;;     (doseq [report reports]
-;;       (.write writer (str (:date report) "," (:location report) "," (:temperature report) "," (:condition report) "\n")))))
-
 (defn view-weather-reports
   "Write code to display weather reports in a tabular format."
   [reports]
@@ -323,7 +316,7 @@
       (let [choice (get-user-input "Enter your choice (1-2): ")]
         (case choice
           "1" (let [condition (get-user-input "Enter weather condition: ")
-                    filtered (filter (filter-by-condition-pred condition) reports)]
+                    filtered (vec (filter (filter-by-condition-pred condition) reports))]
                 (if (empty? filtered)
                   (print-no-reports-for-condition condition)
                   (do
@@ -331,7 +324,7 @@
                     (view-weather-reports filtered))))
           "2" (let [min-temp (prompt-for-integer (str "Enter minimum temperature(" dominant-unit "): ")); Ensure valid integer input
                     max-temp (prompt-for-integer (str "Enter maximum temperature(" dominant-unit "): "))
-                    filtered (filter (filter-by-temperature-range-pred min-temp max-temp) reports)]
+                    filtered (vec (filter (filter-by-temperature-range-pred min-temp max-temp) reports))]
                 (if (empty? filtered)
                   (print-no-reports-for-temperature-range min-temp max-temp dominant-unit)
                   (do
@@ -348,11 +341,11 @@
       (print-transformation-options)
       (let [choice (get-user-input "Enter your choice (1-2): ")]
         (case choice
-          "1" (let [transformed (map #(convert-temperature-unit % "°F") reports)]
+          "1" (let [transformed (vec (map #(convert-temperature-unit % "°F") reports))]
                 (print-transformation-success "Fahrenheit")
                 (view-weather-reports transformed)
                 transformed)
-          "2" (let [transformed (map #(convert-temperature-unit % "°C") reports)]
+          "2" (let [transformed (vec (map #(convert-temperature-unit % "°C") reports))]
                 (print-transformation-success "Celsius")
                 (view-weather-reports transformed)
                 transformed)
