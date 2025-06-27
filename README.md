@@ -2,11 +2,10 @@
 
 Directory structure is as follows:
 
-
-weather-manager/
-├── weather-data.txt       (contains weather data to be processed)
-└── src/
-    └── weather.clj   (contains the code)
+     weather-manager/
+     ├── weather-data.txt       (contains weather data to be processed)
+     └── src/
+        └── weather.clj   (contains the code)
 
 To run the application, navigate to the weather-manager directory, and please make sure the weather-data.txt file is in the same directory.
 
